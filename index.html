@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html>
+<meta charset="utf-8">
+<title>Citibike NYC</title>
+<!using sankey example http://bost.ocks.org/mike/sankey/>
+<style>
+
+body {
+  font-size: 12pt;
+  font-family: "Helvetica Neue",Arial,sans-serif;
+  color: #666;
+  fill: #666;
+  stroke: none;
+  margin-top:    20px;
+  margin-right:  20px;
+  margin-bottom: 20px;
+  margin-left:   20px;
+}
+
+#chart {
+  height: 600px;
+}
+
+.node rect {
+  cursor: move;
+  fill-opacity: .8;
+  shape-rendering: crispEdges;
+}
+
+.node text {
+  pointer-events: none;
+  color: #666
+}
+
+.link {
+  fill: none;
+  stroke: #000;
+  stroke-opacity: .2;
+}
+.link_text  {
+  font-weight: bold;
+  font-size: 60% ;
+  fill-color: #666;
+  fill-opacity: 0;
+}
+
+.link:hover {
+  stroke-opacity: .5;
+}
+
+.text {
+  font-size: 14px;
+  font-family: "Helvetica Neue",Arial,sans-serif;
+  color: #666;
+}
+
+.axislabel text {
+  font-weight: bold;
+  font-size: 120% ;
+  color: #666;
+}
+.nodelabel text {
+  font-weight: bold;
+  font-size: 100% ;
+  color: #666;
+}
+
+.node_ref {
+  font-size: 110%;
+  color: #FFF;
+}
+
+</style>
+<body>
+<h2>Citibike New York City - W205 Group Project
+<br>Trip flows between neighborhoods</h2>
+<p>The <a href="http://www.citibikenyc.com/"></a> <a href="http://www.citibikenyc.com/system-data">trip histories</a><br>
+<table style="width:100%">
+  <tr style="vertical-align:top">
+    <td rowspan=2 style="width:35% padding:100px vertical-align:top">
+      <b>Explore</b>
+      <br>Move the mouse over the highighted text, departures, arrivals or flows.</b>
+      <p><span class="node_ref">Chelsea</span>
+    </td>
+    <td style="width:10%">
+    </td>
+    <td style="width:55% padding:100px outline:thin">
+      <p id="chart">
+    </td>
+  </tr>
+  <tr>
+    <td>
+    </td>
+    <td></td>
+    <td id="totaltrips" style=""> 
+    </td>
+
+
+</table>
+<p>Flow layout by <a href="http://bost.ocks.org/mike/sankey/">d3 Sankey</a>
+<br>Colors by <a href="http://colorbrewer2.org/?type=qualitative&scheme=Set2&n=7">colorbrewer.org</a>
+</body>
+<script src="http://d3js.org/d3.v2.min.js?2.9.1"></script>
+<script src="citibike_sankey.js"></script>
+<script>
+
+// marging an plt sizes 
+var margin = {top: 5, right: 150, bottom: 60, left: 150},
+
+    width = 600 - margin.left - margin.right,
+    height = 560 - margin.top - margin.bottom,
+    centerx = 600 / 2 ;
+
+// formatters
+var formatNumber = d3.format(",.0f"),
+    format = function(d) { return formatNumber(d) ; };
+
+var formatPercent = d3.format(",.0%"),
+    format = function(d) { return formatNumber(d) ; };
+
+var formatPercent1 = d3.format(",.1%"),
+    format = function(d) { return formatNumber(d) ; };
+
+// format thecNodectooltip. 
+var formatNodeTooltip =  function(d) { 
+    if (d.node_type == "source") {
+      t2 = formatNumber(d.value) + " departures" ; 
+      tt = d.name + "\n" + t2 ;
+    } else {
+      t2 = formatNumber(d.value) + " arrivals\n" ;
+      change = d.value/d.assoc_node.value - 1
+      t4 = "At end of morning rush, " + d.name + " has " + 
+           formatPercent(Math.abs(change)) + ((change > 0) ? " more bikes" : " fewer bikes") ;
+      tt = d.name + "\n" + t2 + t4;
+    } ;
+    // console.log(tt) ;
+  return tt
+};
+
+// select the chart area
+var svg = d3.select("#chart").append("svg")
+    .attr("width", width + margin.left + margin.right)
+    .attr("height", height + margin.top + margin.bottom)
+  .append("g")
+    .attr("transform", "translate(" + margin.left + "," + margin.top + ")")  ;
+
+// select node references within the text
+var node_refs = d3.selectAll(".node_ref") ;
+
+// use the d3 sankey library 
+var sankey = d3.sankey()
+    .nodeWidth(40)
+    .nodePadding(10)
+    .size([width, height]);
+
+// pglobals for the node and link structure
+var path = sankey.link();
+var rides = {}
+
+// currently, no action on mousemove 
+function mouseMove() {} ;
+ 
+
+// color scales -- from colorbrewer.org
+//var color_scale = d3.scale.category10() ;
+var color_scale = d3.scale.ordinal()
+  .domain([0, 1, 2, 3, 4, 5, 6])
+  .range(['rgb(102,194,165)','rgb(252,141,98)','rgb(141,160,203)',
+          'rgb(231,138,195)','rgb(166,216,84)','rgb(255,217,47)','rgb(229,196,148)']);
+var color_scale_name = d3.scale.ordinal()
+  .domain(["Chelsea", "Lower East", "Gramercy Park", "Village/Soho", "Brooklyn", 
+           "Lower Manhattan", "Upper East"])
+  .range(['rgb(102,194,165)','rgb(252,141,98)','rgb(141,160,203)',
+         'rgb(231,138,195)','rgb(166,216,84)','rgb(255,217,47)','rgb(229,196,148)']);
+
+function node_color (node) {
+  color = color_scale_name(node.name )  ;
+  return color ;
+} ;
+
+function node_color_by_name (node_name) {
+    color = color_scale_name(node_name.trim())  ;
+
+  return color ;
+} ;
+
+// opacities for foreground and background link as well as the initial state for
+// selected stations
+var fg_opacity = "0.6",
+    bg_opacity = "0.1",
+    fg_text_opacity = "1.0",
+    bg_text_opacity = "0.0" ;
+
+
+// used to show the initial state which emphasizes certain stations
+function show_graded_opacity(d) {
+    if (d.source.name == "Chelsea" | d.source.name == "Lower East" | d.source.name == "Upper East" ) {
+      return 0.6;
+    } else {
+      return 0.1;
+    }
+}
+
+// debugger;
+// d3 data driver
+d3.json("station_trips_sankey.json", function(rides) {
+
+  // build the nodes and links - calc totals
+  sankey
+      .nodes(rides.nodes)
+      .links(rides.links)
+      .layout(32);
+  total_rides = d3.sum(rides.links, function(d) {return d.value; }) ;
+
+  // link up corresponding source and target pairs using assoc_node
+  // calulate fractions of totals ans updtae nodes
+  neighborhood_count = rides.nodes.length / 2 ;
+  first_source_node = rides.nodes[0] ;
+  first_target_node = rides.nodes[neighborhood_count] ;
+  for (ni = 0 ; ni<neighborhood_count; ni++ ) {
+     // source nodes 
+     rides.nodes[ni].assoc_node = rides.nodes[ni + neighborhood_count] ;
+     rides.nodes[ni].value_fraction = rides.nodes[ni].value / total_rides ;
+     // target nodes
+    rides.nodes[ni + neighborhood_count].assoc_node = rides.nodes[ni] ;
+    rides.nodes[ni + neighborhood_count].value_fraction = rides.nodes[ni + neighborhood_count].value / total_rides ;
+  }
+
+  // calculate the part of the value that stays in the node (neighborhood)
+  rides.links.forEach( function(d) { 
+       if (d.target == d.source.assoc_node) d.source.value_intra = d.value ;} )
+  
+  // Node Names that are mention in text are made live with node_ref class
+  // Entered text (innerHTML) must match node name exactky
+  node_refs
+      .style("font-size",  "110%")
+      .style("background-color", 
+            function (d) { return node_color_by_name(this.innerHTML);})
+      .on("mouseover", function (d) {
+        return linkSubSet(rides.nodes.map(function (d) {return d.name}).indexOf(this.innerHTML), 
+                          rides.nodes.length) ; }) 
+      .on("mousemove", mouseMove()) 
+      .on("mouseout",  function () {return linkSubSet(-1, rides.nodes.length); })
+  
+  // Axis titles - Departure 
+  svg.append("text")
+    .attr("x", first_source_node.x - 6)
+    .attr("y", 12)
+    .attr("text-anchor", "end")
+    .attr("class", "axislabel")
+    .style("fill", "#666")
+    .style("font-weight", "bold")
+    .text("DEPARTURES") 
+    .on("mouseover",  function ()  {return linkSubSet(-1, rides.nodes.length) ; });
+
+  // Axis titles - Arrival
+  svg.append("text")
+    .attr("x", first_target_node.x + sankey.nodeWidth() + 6)
+    .attr("y", 12)
+    .attr("text-anchor", "start")
+    .attr("class", "axislabel")
+    .style("font-weight", "bold")
+    .style("fill", "#666")
+    .text("ARRIVALS") ;
+
+  // total rides 
+  svg.append("text")
+    .attr("x", width/2)
+    .attr("y", height  + 40)
+    .attr("text-anchor", "middle")
+    .style("font-weight", "bold")
+    .style("fill", "#666")
+    .text(formatNumber(total_rides) + " Citibike NYC rides, 4 am to 10 am, June 2015") 
+
+  svg.append("text")
+    .attr("x", width/2)
+    .attr("y", height  + 52)
+    .attr("text-anchor", "middle")
+    .style("font-size", "80%")
+    .style("font-weight", "normal")
+    .style("fill", "#666")
+    .text("Percentages less than 1% omitted") 
+
+  svg.append("text") 
+
+  // LINKS - as paths
+  var link = svg.append("g").selectAll(".link")
+      .data(rides.links)
+    .enter().append("path")
+      .attr("class", "link")
+      .attr("id", function(d) {return "link_" + d.source.id+ "_" + d.target.id;})
+      .attr("link_source_id", function(d) {return d.source.id;})
+      .attr("link_target_id", function(d) {return d.target.id;})
+      .attr("d", path)
+      .style("fill", "none")
+      .style("stroke-opacity", function(d) {return show_graded_opacity (d); })
+      .style("stroke-width", function(d) { return Math.max(1, d.dy); })
+      .style("stroke", function(d) { return d.color = node_color(d.source); })
+      .sort(function(a, b) { return b.dy - a.dy; })
+      .on("mouseover", function (d) {return linkSubSet(d.source.id, rides.nodes.length) ; }) 
+      .on("mousemove", mouseMove()) 
+      .on("mouseout", function(){return null;}) ;
+      // .on("mouseout",  function () {return linkSubSet(-1, rides.nodes.length); });
+
+  // Link - Tooltip
+  link.append("title")
+      .text(function(d) { return d.source.name + " → " + d.target.name + "\n" +
+         format(d.value) + " rides\n" + 
+         formatPercent1(d.value/total_rides) ;  }) ;
+
+  // link text- percentages
+  var linkPaths = svg.selectAll("g link_text")
+        .data(rides.links)
+  .enter()
+  .append("text")
+    .attr("class", "link_text")
+    .attr("link_text_source_id", function(d) {return d.source.id;})
+    .attr("link_text_target_id", function(d) {return d.target.id;})
+    .attr("text-anchor", "end")
+    .attr("dominant-baseline",  "middle")
+    .attr("x", function(d) {return d.target.x  - 3;})
+    .attr("y", function(d) {return d.target.y + d.ty  + d.dy/2 ;})
+    .text(function(d) {return (d.value/total_rides) >.01 ? formatPercent1(d.value/total_rides) : "";}) ;
+
+ // NODES - as rectangles plus tooltiip
+ var node = svg.append("g").selectAll(".node")
+      .data(rides.nodes)
+    .enter().append("g")
+      .attr("class", "node")
+      .attr("transform", function(d) { return "translate(" + d.x + "," + d.y + ")"; })
+      .on("mouseover", function (d) {return linkSubSet(d.id, rides.nodes.length) ; }) 
+  
+  node.append("rect")
+      .style("fill", function(d) { return d.color = node_color(d) ; })
+      .style("stroke", function(d) { return d3.rgb(d.color).darker(0.1); })
+      .attr("height", function(d) { return d.dy; })
+      .attr("width", sankey.nodeWidth())
+    .append("title")
+      .text(function(d) { return formatNodeTooltip(d); });
+
+  // Text for the node labels
+  node.append("text")
+      .attr("class", "nodelabel")
+      .attr("x", -6)
+      .attr("y", function(d) { return 2 + d.dy / 2; })
+      .attr("dy", "0.2em")
+      .attr("text-anchor", "end")
+      .attr("transform", null)
+      .text(function(d) { return d.name; })
+      .style("fill", "#666")
+    .on("mouseover", function (d) {return linkSubSet(d.id, rides.nodes.length) ; }) 
+    .filter(function(d) { return d.x > width / 2; })
+      .attr("x", 6 + sankey.nodeWidth())
+      .attr("text-anchor", "start")
+;
+// Text for the node percentages
+  node.append("text")
+      .attr("class", "nodepercent")
+      .attr("x", sankey.nodeWidth()/2)
+      .attr("y", function(d) { return 2 + d.dy / 2; })
+      .attr("dy", "0.2em")
+      .attr("text-anchor", "middle")
+      .attr("transform", null)
+      .text(function(d) { return formatPercent(d.value_fraction)})
+      .style("font-size", "0.9em")
+      .style("fill", "#666");
+
+  // Determines a subset of source links attached to this node identified by index
+  // Transition to highlight selected and fade the not selected
+  // This is the fundamental mouseover selection function
+  var selected_index ;
+  function linkSubSet(index, nodes_length) {
+
+    // selects all links except teh currently selected
+    function make_other_selectors(identifier, ix, count) {
+       // identifier: is  "link_source_id" or "link_text_source_id"
+       var ixx = (ix+1)%count ;
+       var sel = ""
+       var delim = ""
+       while (ixx != ix) {
+        sel = sel + delim + make_selector(identifier, ixx) 
+        delim = ","
+        ixx = (ixx+1)%count
+       }
+       // console.log("Selectors: " + sel)
+       return sel;
+    }
+    // selects links to or from this index (comma is the boolean OR)
+    function make_selector(identifier, i) {
+       var sel = '[' + identifier + '_source_id="' + i + '"],' +
+                 '[' + identifier + '_target_id="' + i + '"]' ;
+       return sel
+    }
+
+    // if the same as the current then dont transition
+    // console.log("selecting " + index)
+    if (index == selected_index) {
+      return
+    }
+    selected_index=index;
+
+    // BUILD foreground (fg) and background (BG) SELECTORS, to fade background links, hide
+    // background text. When all links are shown the text is background as well to avoid clutter
+    //if pointing at an item
+    var bg_selector, fg_selector ;
+    if (index >= 0) { 
+      fg_selector = make_selector("link", index)     // show link
+      bg_selector = make_other_selectors("link", index, nodes_length); // bg  link    
+      fg_text_selector = make_selector("link_text", index)     // show link text
+      bg_text_selector = make_other_selectors("link_text", index, nodes_length); // bg link text
+    } else { // show all
+      fg_selector = ".link" ; // show all links
+      bg_selector = "" ;  // hide nothing
+      fg_text_selector = "" ; // show no text to avoid clutter
+      bg_text_selector = ".link_text"
+    }
+    // show the selected 
+    var t2 = svg.transition()
+        .duration(0)
+        .delay(0);
+    // console.log("Visible: " + fg_selector +  "\n" + fg_text_selector + "\n");
+    t2.selectAll(fg_selector )
+      .style("stroke-opacity", fg_opacity)
+    t2.selectAll(fg_text_selector )
+      .style("fill-opacity", fg_text_opacity)
+
+    // hide the other (unless its show all)
+    var delay_ms = 0;
+    if (bg_selector != "") {
+      var t1 = svg.transition()
+          .delay(function (d, i) {delay_ms+=200;return delay_ms})
+      // console.log("Hidden: " + bg_selector + "\n" + bg_text_selector + "\n");
+      t1.selectAll(bg_selector)    
+          .style("stroke-opacity", bg_opacity)
+      t1.selectAll(bg_text_selector)    
+          .style("fill-opacity", bg_text_opacity)
+    }
+    // show the selected 
+    var t3 = svg.transition()
+        .duration(200)
+        .delay(0);
+    // console.log("Visible: " + fg_selector);
+    t3.selectAll(fg_selector )
+     .style("stroke-opacity", fg_opacity)
+    t3.selectAll(fg_text_selector )
+     .style("fill-opacity", fg_text_opacity)
+  } }  );
+
+</script>
