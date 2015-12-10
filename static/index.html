@@ -134,7 +134,7 @@
 	    });
 	};
 
-	var queryfile = "query1.csv";
+	var queryfile = "sample_query_output/query1.csv";
 
 	function query(){
 
@@ -156,13 +156,13 @@
 
 		query7 =paramvalues.GoodWeather==1 && paramvalues.Subscriber==1 && paramvalues.Male==1 && paramvalues.Age20To30==1 && paramvalues.Hour0To7==1 && paramvalues.outgoing==1;
 
-		queryfile = "query1.csv";
-		if (query2){queryfile="query2.csv";};
-		if (query3){queryfile="query3.csv";};
-		if (query4){queryfile="query4.csv";};
-		if (query5){queryfile="query5.csv";};
-		if (query6){queryfile="query6.csv";};
-		if (query7){queryfile="query7.csv";};
+		queryfile = "sample_query_output/query1.csv";
+		if (query2){queryfile="sample_query_output/query2.csv";};
+		if (query3){queryfile="sample_query_output/query3.csv";};
+		if (query4){queryfile="sample_query_output/query4.csv";};
+		if (query5){queryfile="sample_query_output/query5.csv";};
+		if (query6){queryfile="sample_query_output/query6.csv";};
+		if (query7){queryfile="sample_query_output/query7.csv";};
 
 		//Update the map
 		mapupdate();
@@ -232,7 +232,7 @@ var map = d3.select("#map")
 
 //Load in GeoJSON data
 function loadgeo(){
-	d3.json("newyorkcity.json", function(json) {
+	d3.json("data/newyorkcity.json", function(json) {
 		//Bind data and create one path per GeoJSON feature to draw the map
 		map.selectAll("path")
 		   .data(json.features)
@@ -254,7 +254,7 @@ var maptip = d3.tip()
 map.call(maptip);
 
 //Load stations and initial data
-d3.csv("stations.csv", function(data) {
+d3.csv("data/stations.csv", function(data) {
 	map.selectAll("circle") // add circles to the svg map
 		.data(data) //can use .slice here to subset data if needed
 		.enter()
