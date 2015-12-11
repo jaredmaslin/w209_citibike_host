@@ -39,16 +39,7 @@ def get_weather_data(es, heavy_rain=None, heavy_snow=None, too_windy=None,
     return dates
 
 def get_trips_data(es, dates=None, usertype=None, gender=None, min_age=0, max_age=99, min_hour=0, max_hour=23, incoming=1):
-    query = '{\
-                "query":\
-                {\
-                    "filtered":\
-                    {\
-                        "query":{"match_all":{}},\
-                        "filter":\
-                        {\
-                            "bool": \
-                            {'
+    query = '{ "query": { "filtered": { "query":{"match_all":{}}, "filter": { "bool": {'
     conditions=[]
 
     if dates is not None:
