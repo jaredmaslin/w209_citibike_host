@@ -132,4 +132,4 @@ def query_es():
     return 'Please check the tmp query document at static/tmp_data/tmp_query_output.csv'
 
 if __name__ == '__main__':
-    app.run()
+    app.run(host='0.0.0.0')
