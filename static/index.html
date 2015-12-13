@@ -180,6 +180,13 @@
 	<script src="/d3/d3.tip.v0.6.3.js"></script>
 	<script type="text/javascript">
 
+	console.log("test1")
+
+	d3.json('http://54.85.92.24:5000/query_es?heavy_rain=0&heavy_snow=0&too_windy=0&too_hot=0&too_cold=0&extreme_weather=0&usertype=1&gender=1&min_age=20&max_age=30&min_hour=0&max_hour=23&incoming=1', function(data){
+		console.log("TEST 2")
+		console.log(data);
+	});
+
 	//Function to reorder positioning of crowded elements
 	d3.selection.prototype.moveToFront = function() {
 		return this.each(function(){
