@@ -14,22 +14,7 @@ import sys
 app = Flask(__name__)
 app.debug = True
 
-
-# Routes
-@app.route('/')
-def root():
-    return app.send_static_file('index.html')
-
-@app.route('/<path:path>')
-def static_proxy(path):
-    # send_static_file will guess the correct MIME type
-    return app.send_static_file(path)
-
-#http://127.0.0.1:5000/query_es?heavy_rain=0&heavy_snow=0&too_windy=0&too_hot=0&too_cold=0&extreme_weather=0&usertype=1&gender=0&min_age=20&max_age=30&min_hour=0&max_hour=23&incoming=1
-@app.route('/query_es', methods=['GET'])
-def query_es():
-
-    def get_weather_data(es, heavy_rain=None, heavy_snow=None, too_windy=None, 
+def get_weather_data(es, heavy_rain=None, heavy_snow=None, too_windy=None, 
                             too_hot=None, too_cold=None, extreme_weather=None):
 
         query = '{ "query": { "filtered": { "query":{"match_all":{}}, "filter": { "bool":  {'
@@ -62,7 +47,8 @@ def query_es():
         dates = map(lambda x:'"'+str(x)+'"',dates)
         return dates
 
-    def get_trips_data(es, dates=None, usertype=None, gender=None, min_age=0, max_age=99, min_hour=0, max_hour=23, incoming=1):
+
+def get_trips_data(es, dates=None, usertype=None, gender=None, min_age=0, max_age=99, min_hour=0, max_hour=23, incoming=1):
         query = '{ "query": { "filtered": { "query":{"match_all":{}}, "filter": { "bool": {'
         conditions=[]
 
@@ -93,6 +79,20 @@ def query_es():
         #print res['hits']['total']
         fopen.close()
 
+
+# Routes
+@app.route('/')
+def root():
+    return app.send_static_file('index.html')
+
+@app.route('/<path:path>')
+def static_proxy(path):
+    # send_static_file will guess the correct MIME type
+    return app.send_static_file(path)
+
+#http://127.0.0.1:5000/query_es?heavy_rain=0&heavy_snow=0&too_windy=0&too_hot=0&too_cold=0&extreme_weather=0&usertype=1&gender=0&min_age=20&max_age=30&min_hour=0&max_hour=23&incoming=1
+@app.route('/query_es', methods=['GET'])
+def query_es():
 
     #get user input
     heavy_rain=request.args.get('heavy_rain') # 1 or 0
@@ -143,5 +143,5 @@ def query_es():
     return out
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0')
-    #app.run(host='127.0.0.1')
+    #app.run(host='0.0.0.0')
+    app.run(host='127.0.0.1')
