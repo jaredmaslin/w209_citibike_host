@@ -31,7 +31,8 @@ def main():
     #2.1.0 version
     #es = Elasticsearch(['localhost:9200'])
     #v1.7.3 version
-    es = Elasticsearch(['localhost:9201'])
+    #es = Elasticsearch(['localhost:9201'])
+    es = Elasticsearch(['https://search-w209-tma-gffjjisnofefdcomwzogolkeba.us-east-1.es.amazonaws.com/'])
     data_handler("data/weather.simplified.csv", "weather", es)
     data_handler("data/stations.csv", "stations", es)
     data_handler("data/trips.csv", "trips", es)

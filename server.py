@@ -5,7 +5,7 @@
 
 from flask import Flask, request, redirect, url_for, send_from_directory
 from elasticsearch import Elasticsearch
-import json
+import json, csv
 import re
 import sys
 
@@ -120,7 +120,8 @@ def query_es():
         incoming=1
 
 
-    es = Elasticsearch(['localhost:9200'])
+    #es = Elasticsearch(['localhost:9200'])
+    es = Elasticsearch(['https://search-w209-tma-gffjjisnofefdcomwzogolkeba.us-east-1.es.amazonaws.com/'])
     dates = get_weather_data(es,heavy_rain=heavy_rain, heavy_snow=heavy_snow, too_windy=too_windy, 
                         too_hot=too_hot, too_cold=too_cold, extreme_weather=extreme_weather)
     if not dates:
@@ -129,7 +130,18 @@ def query_es():
     get_trips_data(es, dates=dates, usertype=usertype, gender=gender, min_age=min_age, 
                     max_age=max_age, min_hour=min_hour, max_hour=max_hour, incoming=incoming)
 
-    return 'Please check the tmp query document at static/tmp_data/tmp_query_output.csv'
+    # dump data in csv file into json object
+    fopen = open('static/tmp_data/tmp_query_output.csv','r')
+
+    # Open the CSV  
+    # Change each fieldname to the appropriate field name.
+    reader = csv.DictReader( fopen, fieldnames = ( "stationId","count"))  
+    # Parse the CSV into JSON  
+    out = json.dumps( [ row for row in reader ] )  
+    fopen.close()
+    #return 'Please check the tmp query document at static/tmp_data/tmp_query_output.csv'
+    return out
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0')
+    #app.run(host='127.0.0.1')
