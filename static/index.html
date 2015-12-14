@@ -718,16 +718,17 @@
 
 	// build a dictionary of station ID to station name
 	var stationIDtoName = {};
-	results = d3.csv("data/stations.csv")
-	for (var i=0; i<results.length; i++) {
-		stationIDtoName[results[i].stationID] = resutls[i].stationName;
-	}
+	var results = d3.csv("data/stations.csv", function(data) {
+		data.forEach(function(d) {
+			stationIDtoName[d.stationID] = d.stationName;
+		});
+	});
 
 	var tip = d3.tip()
 	.attr('class', 'd3-tip')
 	.offset([-10, 0])
 	.html(function(d) {
-		return "<strong>Trip Count:</strong> <span style='color:yellow'>" + d.count + "</span>"
+		return "<strong>Trip Count:</strong> <span style='color:yellow'>" + d.count + "</span><span style='color:white'> Station Name: <span style='color:yellow'>" + stationIDtoName[d.stationID] + "</span>"
 	});
 
 	var graph = d3.select("div.histoArea")
