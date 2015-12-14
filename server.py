@@ -37,6 +37,7 @@ def get_weather_data(es, heavy_rain=None, heavy_snow=None, too_windy=None,
     query = query + ",".join(conditions)
     
     query = query + "]}}}}}"
+    #print query
     res = es.search(index="weather",
                     size=500,
                     body=query)
@@ -46,7 +47,7 @@ def get_weather_data(es, heavy_rain=None, heavy_snow=None, too_windy=None,
         dates.append(hit['_source']['DATE'])
     #print("Matched %d days:" % res['hits']['total'])
     dates = map(lambda x:'"'+str(x)+'"',dates)
-    print dates
+    #print dates
     return dates
 
 
