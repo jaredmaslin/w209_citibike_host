@@ -76,7 +76,7 @@ def get_trips_data(es, outfile, dates=None, usertype=None, gender=None, min_age=
                     body=query)
     
     fopen = open(outfile,'w')
-    fopen.write("stationId,count\n")
+    fopen.write("stationID,count\n")
     for d in res['aggregations'][json_ID_field]['buckets']:
         fopen.write("{},{}\n".format(d['key'],d['doc_count']))
     #print res['hits']['total']
@@ -115,7 +115,7 @@ def get_sid_trips_data(es, outfile, station_id=None, dates=None, usertype=None, 
                     body=query)
     
     fopen = open(outfile,'w')
-    fopen.write("stationId,count\n")
+    fopen.write("stationID,count\n")
     for d in res['aggregations'][json_ID_field]['buckets']:
         fopen.write("{},{}\n".format(d['key'],d['doc_count']))
     #print res['hits']['total']

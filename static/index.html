@@ -131,9 +131,12 @@
     .histoArea {
     	width: 950px;
     	height: 450px;
-    	display: -webkit-flex;
-    	display: flex;
-    	-webkit-justify-content: center;
+    	/*display: -webkit-flex;
+    	display: flex;*/
+    	-webkit-justify-content: center
+    	position: absolute;
+    	left: 20px;
+    	top: 1400px;
     }
     .tsArea {
     	width: 1000px;
@@ -300,6 +303,14 @@
 		});
 	};
 
+	// build a dictionary of station ID to station name
+	var stationIDtoName = {};
+	var results = d3.csv("data/stations.csv", function(data) {
+		data.forEach(function(d) {
+			stationIDtoName[d.stationID] = d.stationName;
+		});
+	});
+
 	var queryfile = "sample_query_output/query1.csv";
 
 	function query(){
@@ -401,11 +412,8 @@
 		console.log(queryfile)
 
 
-		//Update the map
-		mapupdate();
-
-		//Update the histogram
-		histogramupdate();
+		//Update the map and histogram
+		update();
 	};
 
 	//Width and height
@@ -464,7 +472,11 @@
 	.attr('class', 'd3-tip')
 	.offset([-10, 0])
 	.html(function(d) {
-		return "<strong></strong> <span style='color:white'>" + d.stationName + "</span>"
+		if (d.count == null) {
+			return "<strong>Trip Count:</strong> <span style='color:yellow'>0</span><span style='color:white'> Station Name: <span style='color:yellow'>" + stationIDtoName[d.stationID] + "</span>"
+		} else {
+		return "<strong>Trip Count:</strong> <span style='color:yellow'>" + d.count + "</span><span style='color:white'> Station Name: <span style='color:yellow'>" + stationIDtoName[d.stationID] + "</span>"
+		};
 	});
 	map.call(maptip);
 
@@ -506,47 +518,6 @@
 			});
 		map.selectAll("path").moveToBack(); // To gaurantee that the map is behind the circles 
 	});
-
-	function mapupdate(){
-		d3.csv(queryfile, function(data){
-			var max = d3.max(data, function(d) { return +d.count});
-			var min = d3.min(data, function(d) { return +d.count});
-			var opacityScale = d3.scale.linear().domain([min,max]).range([.2,1]);
-
-			// first set all values to lowest opacity
-			map.selectAll("circle")
-			.attr("opacity", .6)
-			.attr("fill", "rgb(32,56,110)");
-
-			// then update opacity on values in the new dataset
-			map.selectAll("circle")
-			.data(data, function(d) { return d.stationID; })
-			.transition()
-			.duration(100)
-			.delay(function(d, i) {
-				return i * 10;
-			})
-			.attr("opacity", function(d) { return opacityScale(d.count);})
-			.on("click", function(d){
-				d3.selectAll("circle")
-				.attr("fill", "rgb(32,56,110)")
-				.attr("r", 3.0);
-
-				d3.select(this)
-				.attr("fill", "red")
-				.attr("fill-opacity", .8)
-				.attr("r", 8)
-				.moveToBack();
-
-				map.selectAll("path").moveToBack();
-
-				//alert("stationName=" + this.getAttribute('id') + " stationID="+d.stationID + " count=" + d.count); // Placeholder for interactivity code
-
-				//query();
-				})
-			;
-		});
-	}
 	</script>
 
 	<script>
@@ -713,13 +684,6 @@
 	.orient("left")
 	.tickFormat(formatString);
 
-	// build a dictionary of station ID to station name
-	var stationIDtoName = {};
-	var results = d3.csv("data/stations.csv", function(data) {
-		data.forEach(function(d) {
-			stationIDtoName[d.stationID] = d.stationName;
-		});
-	});
 
 	var tip = d3.tip()
 	.attr('class', 'd3-tip')
@@ -772,7 +736,7 @@
 			.style("font-size", "24px")
 			.style("text-decoration", "bold")
 			.style("font-family", "Arial")
-			.text("Top Destinations (or Origins) [2014/11 - 2015/11]");
+			.text("Top Trafficked Sites [2014/11 - 2015/11]");
 
 			graph.selectAll(".bar")
 			.data(data)
@@ -790,9 +754,56 @@
 
 	histogrambase();
 
-	function histogramupdate(){
-		d3.csv(queryfile, type, function(error, data) {
+	function update(){
+		d3.csv(queryfile, type, function(data){
+			//Update Map
+			var max = d3.max(data, function(d) { return +d.count});
+			var min = d3.min(data, function(d) { return +d.count});
+			var opacityScale = d3.scale.linear().domain([min,max]).range([.2,1]);
+
+			// first set all values to lowest opacity
+			map.selectAll("circle")
+			.attr("opacity", .3)
+			.attr("fill", "rgb(32,56,110)");
+
+			// then update opacity on values in the new dataset
+			map.selectAll("circle")
+			.data(data, function(d) { return d.stationID; })
+			.on('mouseover', maptip.show)
+			.on('mouseout', maptip.hide)
+			.transition()
+			.duration(100)
+			.delay(function(d, i) {
+				return i * 10;
+			})
+			.attr("opacity", function(d) { return opacityScale(d.count);})
+			/*
+			.on("click", function(d){
+				d3.selectAll("circle")
+				.attr("fill", "rgb(32,56,110)")
+				.attr("r", 3.0);
+
+				d3.select(this)
+				.attr("fill", "red")
+				.attr("fill-opacity", .8)
+				.attr("r", 8)
+				.moveToBack();
+
+				map.selectAll("path").moveToBack();
+
+				//alert("stationName=" + this.getAttribute('id') + " stationID="+d.stationID + " count=" + d.count); // Placeholder for interactivity code
+
+				//query();
+			})
+			*/
+			;
+
+
+			console.log("Map updated");
+
+			//Update Histogram		
 			data = data.slice(0,10).reverse();
+
 			x.domain(data.map(function(d) { return d.stationID; }));
 			y.domain([0, d3.max(data, function(d) { return d.count; })]);
 
@@ -821,6 +832,8 @@
 
 			graph.selectAll(".bar")
 			.data(data)
+			.on('mouseover', tip.show)
+			.on('mouseout', tip.hide)
 			.transition()
 			.delay(function(d, i) {
 				return i * 100;
@@ -830,8 +843,9 @@
 			.attr("width", x.rangeBand())
 			.attr("y", function(d) { return y(d.count); })
 			.attr("height", function(d) { return height - y(d.count); })
-			.on('mouseover', tip.show)
-			.on('mouseout', tip.hide);
+			;
+
+			console.log("Histogram updated");
 
 
 		});
