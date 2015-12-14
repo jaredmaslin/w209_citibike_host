@@ -313,62 +313,100 @@
 		//Retrieve appropriate query file
 		queryfile = "sample_query_output/query1.csv";
 
-			// Sample of a full query:
+		// Sample of a full query:
 		//  query_es?heavy_rain=0&heavy_snow=0&too_windy=0&too_hot=0&too_cold=0&extreme_weather=0&usertype=1&gender=1&min_age=20&max_age=30&min_hour=0&max_hour=23&incoming=1
 
 		// Query base
 		queryfile = "http://54.85.92.24:5000/query_es?";
 
-		// The current buttons available:
-		//   ["", "Male", "Female", "Customer", "Subscriber", "Age20To40", "Age40To60", "AgeOver60", "Morning", "Afteroon", "Evening", "Midnight" ,"GoodWeather", "ExtremeWeather"]
+		//Button Categories
+
+		//genders = [["Male", 0], ["Female", 0]];
 		if (genders[0][1]==1 && genders[1][1]==1) {
 			queryfile=queryfile.concat("");
 		} else if (genders[0][1]==1) {
-			queryfile=queryfile.concat("gender=1");
+			queryfile=queryfile.concat("gender=1&");
+		} else if (genders[1][1]==1){
+			queryfile=queryfile.concat("gender=0&");
 		} else {
-			queryfile=queryfile.concat("gender=0");
+			queryfile=queryfile.concat("");
 		};
-		
 
-		if (paramvalues.Customer==1){
+		//ages = [["a", "< 20", 0], ["b", "20 to 30", 0], ["c", "30 to 40", 0], ["d", "40 to 50", 0], ["e", "> 50", 0]]; // id names can't start with number		
+		if (ages[0][2]==1) {
+			queryfile=queryfile.concat("min_age=0&max_age=20");
+		} else if (ages[1][2]==1) {
+			queryfile=queryfile.concat("min_age=20&max_age=30");
+		} else if (ages[2][2]==1) {
+			queryfile=queryfile.concat("min_age=30&max_age=40");
+		} else if (ages[3][2]==1) {
+			queryfile=queryfile.concat("min_age=40&max_age=50");
+		} else if (ages[4][2]==1) {
+			queryfile=queryfile.concat("min_age=50&max_age=99");
+		} else {
+			queryfile=queryfile.concat("min_age=0&max_age=99");
+		}
+
+		//userTypes = [["Subscriber", 0], ["Customer", 0]];
+		if (userTypes[0][1]==1 && userTypes[1][1]==1) {
+			queryfile=queryfile.concat("");
+		} else if (userTypes[1][1]==1) {
 			queryfile=queryfile.concat("&usertype=0");
-		} else {
+		} else if (userTypes[0][1]==1){
 			queryfile=queryfile.concat("&usertype=1");
+		} else {
+			queryfile=queryfile.concat("");
 		};
 
-		if (paramvalues.Age20to40==1){
-			queryfile=queryfile.concat("&min_age=20&max_age=40");
-		};
-
-		if (paramvalues.Age40To60==1){
-			queryfile=queryfile.concat("&min_age=40&max_age=60");
-		};
-
-		if (paramvalues.AgeOver60==1){
-			queryfile=queryfile.concat("&min_age=60&max_age=99");
-		};
-
-		if (paramvalues.Midnight==1){
-			queryfile=queryfile.concat("&min_hour=0&max_hour=6");
-		};
-
-		if (paramvalues.Evening==1){
-			queryfile=queryfile.concat("&min_hour=18&max_hour=23");
-		};
-
-		if (paramvalues.Afternoon==1){
-			queryfile=queryfile.concat("&min_hour=12&max_hour=18");
-		};
-
-		if (paramvalues.Morning==1){
-			queryfile=queryfile.concat("&min_hour=6&max_hour=12");
-		};
-
-		if (paramvalues.GoodWeather==1){
+		//weathers = [["Sunny", 0], ["Rainy", 0], ["Snowy", 0], ["Windy", 0], ["Hot", 0], ["Cold", 0], ["Extreme", 0]];
+		if (weathers[0][1]==1) {
 			queryfile=queryfile.concat("&heavy_rain=0&heavy_snow=0&too_windy=0&too_hot=0&too_cold=0&extreme_weather=0");
 		} else {
-			queryfile=queryfile.concat("&heavy_rain=0&heavy_snow=0&too_windy=0&too_hot=0&too_cold=0&extreme_weather=1");
+			if (weathers[1][1]==1) {
+				queryfile=queryfile.concat("&heavy_rain=1");
+			};
+			if (weathers[2][1]==1) {
+				queryfile=queryfile.concat("&heavy_snow=1");
+			};
+			if (weathers[3][1]==1) {
+				queryfile=queryfile.concat("&too_windy=1");
+			};
+			if (weathers[4][1]==1) {
+				queryfile=queryfile.concat("&too_hot=1");
+			};
+			if (weathers[5][1]==1) {
+				queryfile=queryfile.concat("&too_cold=1");
+			};
+			if (weathers[6][1]==1) {
+				queryfile=queryfile.concat("&extreme_weather=1");
+			};
 		};
+
+		//directions = [["Incoming", 0], ["Outgoing", 0]];
+		if (directions[1][1]==1){
+			queryfile=queryfile.concat("&outgoing=1");
+		} else {
+			queryfile=queryfile.concat("&incoming=1");
+		};
+
+		//hours = [["f", "7am to 10am", 0], ["g", "10am to 5pm", 0], ["h", "5pm to 8pm", 0], ["i", "8pm to 12am", 0], ["j", "12am to 7am", 0]];
+		if (hours[0][2]==1){
+			queryfile=queryfile.concat("&min_hour=7&max_hour=9");
+		} else if (hours[1][2]==1){
+			queryfile=queryfile.concat("&min_hour=10&max_hour=16");
+		} else if (hours[2][2]==1){
+			queryfile=queryfile.concat("&min_hour=17&max_hour=19");
+		} else if (hours[3][2]==1){
+			queryfile=queryfile.concat("&min_hour=20&max_hour=23");
+		} else if (hours[4][2]==1){
+			queryfile=queryfile.concat("&min_hour=0&max_hour=6");
+		} else {
+			queryfile=queryfile.concat("");
+		};
+
+		//Report the final query in the console for debugging
+		console.log(queryfile)
+
 
 		//Update the map
 		mapupdate();
