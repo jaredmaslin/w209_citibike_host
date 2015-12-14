@@ -25,48 +25,117 @@
 		font: bold 40px Arial;
 		color: rgb(32,56,110);
 		border-style: solid;
-		border-width: 2px;
+		border-width: 5px;
 		margin: 50px 300px 50px 300px;
 		padding: 20px 50px 20px 50px;
-		min-width: 500px;
+		border-radius: 20px;
+		min-width: 400px;
+		max-width: 400px;
     }
     h2 {
     	text-decoration: underline;
 		text-align: left;
 		font: bold 24px Arial;
 		color: rgb(32,56,110);
-		padding: 5px 5px 5px 5px;
-		min-width: 100px;
+		padding: 5px 5px 5px 20px;
+		min-width: 1000px;
+		max-width: 1000px;
+    }
+    h3 {
+		text-align: center;
+		font: italic 20px Arial;
+		color: rgb(32,56,110);
+		min-width: 1100px;
+		max-width: 1100px;
     }
     p {
 		text-align: left;
 		font: 18px Arial;
 		color: rgb(32,56,110);
-		padding: 5px 5px 5px 5px;
+		padding: 5px 5px 5px 20px;
 		text-indent: 30px;
-		width: 100px;
+		min-width: 1000px;
+		max-width: 1000px;
     }
+
     div {
-    	padding: 30px;
+    	padding: 20px;
     	margin: 2px;
-    	border: solid rgb(32,56,110);
-    	border-width: 1px;
     }
     .mapArea {
     	width: 500px;
+    	height: 700px;
     	float: left;
+    	display: -webkit-flex;
+    	display: flex;
+    	-webkit-justify-content: center;
     }
     .controlArea {
+    	display: -webkit-flex;
+    	display: flex;
+    	-webkit-flex-wrap: wrap;
+    	flex-wrap: wrap;
     	width: 500px;
-    	float: left;
+    	height: 700px;
+    	position: absolute;
+    	left: 560px;
+    	padding: 20px 20px 20px 20px;
     }
+
+    .buttonContainer {
+    	background-color: rgb(187,222,232);
+    	margin: 5px;
+    	padding: 10px;
+    	font: 18px Arial;
+    	color: rgb(32,56,110);
+    	width: 120px;
+    }
+    .gender {
+    	-webkit-align-self: flex-start;
+    	align-self: flex-start;
+    	height: 250px;
+    }
+    .age {
+    	-webkit-align-self: flex-start;
+    	align-self: flex-start;
+    	height: 250px;
+    }
+	.userType {
+    	-webkit-align-self: flex-start;
+    	align-self: flex-start;
+    	height: 250px;
+    }
+    .hour {
+    	-webkit-align-self: flex-end;
+    	align-self: flex-end;
+    	height: 400px;
+    }
+	.weather {
+    	-webkit-align-self: flex-end;
+    	align-self: flex-end;
+    	height: 400px;
+    }
+    .submit {
+    	-webkit-align-self: flex-end;
+    	align-self: flex-end;
+    	height: 400px;
+    	background-color: white;
+    }
+
     .histoArea {
-    	width: 1000px;
-    	float: left;
+    	width: 950px;
+    	height: 450px;
+    	display: -webkit-flex;
+    	display: flex;
+    	-webkit-justify-content: center;
     }
     .tsArea {
     	width: 1000px;
+    	height: 500px;
     	float: left;
+    	display: -webkit-flex;
+    	display: flex;
+    	-webkit-justify-content: center;
     }
 
 	circle:hover {
@@ -77,10 +146,14 @@
 		transition: all 0.3s;
 	}
 
+	.button {
+		width: 110px;
+		height: 35px;
+	}
 	.myButton {
-		/*-moz-box-shadow:inset 0px 0px 14px -7px #276873;
-		-webkit-box-shadow:inset 0px 0px 14px -7px #276873;*/
-		box-shadow: inset 0px 0px 14px -7px black;
+		width: 110px;
+		height: 35px;
+		box-shadow: inset 0px 5px 5px 0px black;
 		background-color: rgb(32,56,110);
 		-moz-border-radius: 8px;
 		-webkit-border-radius: 8px;
@@ -89,15 +162,16 @@
 		cursor: pointer;
 		color: white;
 		font-family: Arial;
-		font-size: 20px;
-		padding: 13px 32px;
-		/*text-shadow: 0px 1px 0px white;*/
+		font-size: 14px;
+		padding: 5px 5px;
+		text-align: center;
+		margin: 5px 5px;
 	}
 	.myButtonPressed {
-		/*-moz-box-shadow:inset 0px 10px 14px -7px #276873;
-		-webkit-box-shadow:inset 0px 10px 14px -7px #276873;*/
-		box-shadow: inset 0px 15px 14px -7px white;
-		background-color: rgb(22,104,178);
+		width: 110px;
+		height: 35px;
+		box-shadow: inset 0px 5px 5px 0px white;
+		background-color: rgb(32,56,110);
 		-moz-border-radius: 8px;
 		-webkit-border-radius: 8px;
 		border-radius: 8px;
@@ -105,21 +179,21 @@
 		cursor: pointer;
 		color: white;
 		font-family: Arial;
-		font-size: 20px;
-		padding: 13px 32px;
-		text-decoration: none;
-		/*text-shadow: 0px 1px 0px white;*/
+		font-size: 14px;
+		padding: 5px 5px;
+		text-align: center;
+		margin: 5px 5px;		
 	}
 	.myButton:hover {
-		background-color: rgb(187,222,232);
-		transition: background-color .5s;
+		background-color: rgb(32,56,110);
+		opacity: 0.6;
 	}
 	.myButton:active {
 		position: relative;
 		top: 1px;
-		box-shadow:inset 0px 20px 14px -7px yellow;
-
+		box-shadow:i nset 0px 20px 14px -7px yellow;
 	}
+
 	.axis path,
 	.axis line {
 		fill: none;
@@ -169,11 +243,24 @@
 
 <body>
 	<h1>CitiBike Explorer</h1>
-	<h2>Introduction</h2>
-	<p>introduction..........blah...............blah...............blah...............blah...............blah...............blah...............blah...............blah...............blah...............blah...............blah...............</p>
+	<h3>Created by: Taylor Ma, Jared Maslin, Nihar Patel, and Jasmine Qi</h3>
+
+	<h2>Introduction: </h2>
+	<p>The visualization below is intended for public consumption in order to further educate and encourage data exploration stemming from the Citibike NYC program. The intended audience includes potential users of the Citibike NYC program, as well as those with interest in the program, its usage, or any underlying trends. </p>
+
+	<h2>Instructions: </h2>
+	<p>To begin exploration, select a single bike station from the map of New York City below. After selecting a bike station, a pop-up window will appear to identify the station selected. Then, make selections from the available filter buttons to the right of the map for further exploration of the data. Each toggle clicked for a station will display an updated histogram with trips by frequency, reflecting the parameters specified by the user. Users can also move to a different station at any time by selecting one from the map and updating toggles, as desired. </p>
 
 	<div class="mapArea"></div>
-	<div class="controlArea"></div>
+	<div class="controlArea">
+		<div class="buttonContainer gender" id="gender">Gender:</div>
+		<div class="buttonContainer age" id="age">Age:</div>
+		<div class="buttonContainer userType" id="userType">User Type:</div>
+		<div class="buttonContainer hour" id="hour">Hour:</div>
+		<div class="buttonContainer weather" id="weather">Weather:</div>
+		<div class="buttonContainer submit" id="submit"></div>	
+	</div>
+	<br></br>
 	<div class="histoArea"></div>
 	<!-- <div class="tsArea"></div> -->
 
@@ -205,7 +292,6 @@
 	var queryfile = "sample_query_output/query1.csv";
 
 	function query(){
-
 		//Retrieve appropriate query file
 		// Currently, this selects from existing files
 		// Later, this must download and retrieve the correct file
@@ -245,30 +331,12 @@
 	var w = 500;
 	var h = 700;
 
-	//Create the divisions for organizing the display
-	// d3.select("div.mapArea")
-	// .attr("id", "map")
-	// ;
-
-	// d3.select("div.controlArea")
-	// .attr("id", "controls")
-	// //.style("width", w*1.618)
-	// //.style("height", h*.382)
-	// ;
-
-	// d3.select("div.histoArea")
-	// .attr("id", "graph")
-	// //.style("width", w*1.618)
-	// ;
-
-	var male = 1
-	var female = 0
-	var morning = 1
 	</script>
 
 	<script>
 	// Map code----------------------
 	//Coordinates of NYC and zoom settings
+
 	var nyccoordinates = [-74.007124, 40.71455],
 	zoom = 360000,
 	transx = zoom/-3.40367597,
@@ -381,7 +449,7 @@
 
 			// first set all values to lowest opacity
 			map.selectAll("circle")
-			.attr("opacity", .2)
+			.attr("opacity", .6)
 			.attr("fill", "rgb(32,56,110)");
 
 			// then update opacity on values in the new dataset
@@ -396,19 +464,19 @@
 			.on("click", function(d){
 				d3.selectAll("circle")
 				.attr("fill", "rgb(32,56,110)")
-				.attr("r", 3.5);
+				.attr("r", 3.0);
 
 				d3.select(this)
 				.attr("fill", "red")
-				.attr("fill-opacity", .6)
-				.attr("r", 10)
+				.attr("fill-opacity", .8)
+				.attr("r", 8)
 				.moveToBack();
 
 				map.selectAll("path").moveToBack();
 
-					alert("stationName=" + this.getAttribute('id') + " stationID="+d.stationID + " count=" + d.count); // Placeholder for interactivity code
+				alert("stationName=" + this.getAttribute('id') + " stationID="+d.stationID + " count=" + d.count); // Placeholder for interactivity code
 
-					//query();
+				//query();
 				})
 			;
 		});
@@ -417,54 +485,118 @@
 
 	<script>
 	// Controls Code---------------------
+	genders = [["Male", 0], ["Female", 0]];
+	ages = [["a", "< 20", 0], ["b", "20 to 30", 0], ["c", "30 to 40", 0], ["d", "40 to 50", 0], ["e", "> 50", 0]]; // id names can't start with number
+	userTypes = [["Subscriber", 0], ["Customer", 0]];
+	weathers = [["Sunny", 0], ["Rainy", 0], ["Snowy", 0], ["Windy", 0], ["Hot", 0], ["Cold", 0], ["Extreme", 0]];
+	hours = [["f", "7am to 10am", 0], ["g", "10am to 5pm", 0], ["h", "5pm to 8pm", 0], ["i", "8pm to 12am", 0], ["j", "12am to 7am", 0]];
 
-	var margin = {top: 20, right: 20, bottom: 40, left: 40},
-	width = w*1.618 - margin.left - margin.right,
-	cheight = h*.382 - margin.top - margin.bottom;
-	var buttonsize = {w: 80, h:20};
-
-	var parameters = ["", "Male", "Female", "Customer", "Subscriber", "Age20To30", "Age30To40", "Hour0To23", "Hour0To7", "GoodWeather", "HeavyRain","outgoing", "incoming"];
-	var paramvalues = {};
-
-	var controls = d3.select("div.controlArea")
-	.data(parameters).enter()
-	.append("g")
+	d3.select("#gender")
+	.selectAll("button")
+	.data(genders)
+	.enter()
+	.append("button")
 	.attr("class", "myButton")
 	.text(function(d){
-		paramvalues[d]=0;
-		return d;})
+	 	return d[0];})
 	.attr("id", function(d){
-		return d;
-	})
+	 	return d[0];})
 	.on("click", function(d){
 		if (this.getAttribute("class")=="myButton") {
-			d3.select("#"+d).attr("class", "myButtonPressed");
-			paramvalues[d]=1;
+			d3.select(this).attr("class", "myButtonPressed");
+			d[1]=1;
 		} else {
-			d3.select("#"+d).attr("class", "myButton");
-			paramvalues[d]=0;
+			d3.select("#"+d[0]).attr("class", "myButton");
+			d[1]=0;
 		}
-		query();
-	});
+	})
 
-	//d3.selectAll("#button")
-	//	.text("pressed")
-	//	.attr("class", "myButtonPressed");
-			//.attr("-moz-box-shadow", "inset 0px 10px 14px -7px #276873")
-			//.attr("-webkit-box-shadow", "inset 0px 10px 14px -7px #276873")
+	d3.select("#age")
+	.selectAll("button")
+	.data(ages)
+	.enter()
+	.append("button")
+	.attr("class", "myButton")
+	.text(function(d){
+	 	return d[1];})
+	.attr("id", function(d){
+	 	return d[0];})
+	.on("click", function(d){
+		if (this.getAttribute("class")=="myButton") {
+			d3.select("#"+d[0]).attr("class", "myButtonPressed");
+			d[2]=1;
+		} else {
+			d3.select("#"+d[0]).attr("class", "myButton");
+			d[2]=0;
+		}
+	})
 
-			// button = controls.append("g")
-			// button.append("rect")
-			// .attr("width", buttonsize.w)
-			// .attr("height", buttonsize.h)
-			// .style("fill","red");
+	d3.select("#userType")
+	.selectAll("button")
+	.data(userTypes)
+	.enter()
+	.append("button")
+	.attr("class", "myButton")
+	.text(function(d){
+	 	return d[0];})
+	.attr("id", function(d){
+	 	return d[0];})
+	.on("click", function(d){
+		if (this.getAttribute("class")=="myButton") {
+			d3.select(this).attr("class", "myButtonPressed");
+			d[1]=1;
+		} else {
+			d3.select("#"+d[0]).attr("class", "myButton");
+			d[1]=0;
+		}
+	})
 
-			// button.append("text")
-			// //.attr("x", buttonsize.w/2)
-			// .attr("y", buttonsize.h/2)
-			// .attr("dy", ".35em")
-			// .text("sdfsdfsd");
-			// button.attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+	d3.select("#hour")
+	.selectAll("button")
+	.data(hours)
+	.enter()
+	.append("button")
+	.attr("class", "myButton")
+	.text(function(d){
+	 	return d[1];})
+	.attr("id", function(d){
+	 	return d[0];})
+	.on("click", function(d){
+		if (this.getAttribute("class")=="myButton") {
+			d3.select(this).attr("class", "myButtonPressed");
+			d[2]=1;
+		} else {
+			d3.select("#"+d[0]).attr("class", "myButton");
+			d[2]=0;
+		}
+	})
+
+	d3.select("#weather")
+	.selectAll("button")
+	.data(weathers)
+	.enter()
+	.append("button")
+	.attr("class", "myButton")
+	.text(function(d){
+	 	return d[0];})
+	.attr("id", function(d){
+	 	return d[0];})
+	.on("click", function(d){
+		if (this.getAttribute("class")=="myButton") {
+			d3.select(this).attr("class", "myButtonPressed");
+			d[1]=1;
+		} else {
+			d3.select("#"+d[0]).attr("class", "myButton");
+			d[1]=0;
+		}
+	})
+
+	d3.select("#submit")
+	.append("button")
+	.attr("class", "button")
+	.text("SUBMIT")
+	.on("click", query()) // pass genders, ages, userTypes, hours, and weathers to query
+
 	</script>
 
 	<script>
