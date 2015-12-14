@@ -168,9 +168,9 @@
 		cursor: pointer;
 		text-align: center;
 		position: absolute;
-    	left: 180px;
 	}
-	.myButton {
+	/*NP- I reversed these. Active- pushed into the page. Not active- popping out.*/
+	.myButtonPressed {
 		width: 110px;
 		height: 35px;
 		box-shadow: inset 0px 5px 5px 0px black;
@@ -187,7 +187,7 @@
 		text-align: center;
 		margin: 3px 3px;
 	}
-	.myButtonPressed {
+	.myButton {
 		width: 110px;
 		height: 35px;
 		box-shadow: inset 0px 5px 5px 0px white;
@@ -266,10 +266,10 @@
 	<h3>Created by: Taylor Ma, Jared Maslin, Nihar Patel, and Jasmine Qi</h3>
 
 	<h2>Introduction: </h2>
-	<p>The visualization below is intended for public consumption in order to further educate and encourage data exploration stemming from the Citibike NYC program. The intended audience includes potential users of the Citibike NYC program, as well as those with interest in the program, its usage, or any underlying trends. </p>
+	<p>This visualization is intended for public consumption in order to further educate and encourage data exploration stemming from the Citibike NYC program. The intended audience includes potential users of the Citibike NYC program, as well as those with interest in the program, its usage, or any underlying trends. </p>
 
 	<h2>Instructions: </h2>
-	<p>To begin exploration, select a single bike station from the map of New York City below. After selecting a bike station, a pop-up window will appear to identify the station selected. Then, make selections from the available filter buttons to the right of the map for further exploration of the data. After define all the options for a station, click the 'submit' button. Below the map displays a histogram with trips by frequency, reflecting the most popular desitinations or origins. Users can also move to a different station at any time by selecting one from the map and updating toggles, as desired. </p>
+	<p>To begin exploration, select a single bike station from the map of New York City below. After selecting a bike station, a pop-up window will confirm your selection and the map will update to show stations with the most connecting traffic as darker spots. You may filter the data by selecting either none or only one toggle button from each category on the right hand side. After selecting the desired options, click the 'submit' button to update the results. Below the map is a histogram with the top ten traffic locations based on the prior selections.</p>
 
 	<div class="mapArea"></div>
 	<div class="controlArea">
@@ -312,6 +312,7 @@
 	});
 
 	var queryfile = "sample_query_output/query1.csv";
+	var selectedstation = "-99";
 
 	function query(){
 		//Retrieve appropriate query file
@@ -321,7 +322,11 @@
 		//  query_es?heavy_rain=0&heavy_snow=0&too_windy=0&too_hot=0&too_cold=0&extreme_weather=0&usertype=1&gender=1&min_age=20&max_age=30&min_hour=0&max_hour=23&incoming=1
 
 		// Query base
-		queryfile = "http://54.85.92.24:5000/query_es?";
+		if (selectedstation == "-99"){
+			queryfile = "http://54.85.92.24:5000/query_es?";
+		} else {
+			queryfile = "http://54.85.92.24:5000/query_es_sid?station_id="+selectedstation+"&";
+		}
 
 		//Button Categories
 
@@ -472,11 +477,7 @@
 	.attr('class', 'd3-tip')
 	.offset([-10, 0])
 	.html(function(d) {
-		if (d.count == null) {
-			return "<strong>Trip Count:</strong> <span style='color:yellow'>0</span><span style='color:white'> Station Name: <span style='color:yellow'>" + stationIDtoName[d.stationID] + "</span>"
-		} else {
-		return "<strong>Trip Count:</strong> <span style='color:yellow'>" + d.count + "</span><span style='color:white'> Station Name: <span style='color:yellow'>" + stationIDtoName[d.stationID] + "</span>"
-		};
+		return "<span style='color:white'> Station Name: <span style='color:yellow'>" + stationIDtoName[d.stationID] + "</span>";
 	});
 	map.call(maptip);
 
@@ -514,6 +515,8 @@
 				;
 				map.selectAll("path").moveToBack();
 				alert("You have selected: " + this.getAttribute('id')); // Placeholder for interactivity code
+
+				selectedstation=d.stationID;
 				query();
 			});
 		map.selectAll("path").moveToBack(); // To gaurantee that the map is behind the circles 
@@ -652,10 +655,22 @@
 	d3.select("#submit")
 	.append("button")
 	.attr("class", "button")
+	.text("Station Deselect")
+	.on("click", function(){
+		selectedstation="-99";
+		query();
+	}); // pass genders, ages, userTypes, hours, and weathers to query
+
+	d3.select("#submit")
+	.append("button")
+	.attr("class", "button")
 	.text("SUBMIT")
+	.style("left", "180px")
 	.on("click", function(){
 		query();
 	}); // pass genders, ages, userTypes, hours, and weathers to query
+
+
 
 	</script>
 
