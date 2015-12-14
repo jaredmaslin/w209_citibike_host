@@ -93,32 +93,38 @@
     .gender {
     	-webkit-align-self: flex-start;
     	align-self: flex-start;
-    	height: 250px;
+    	height: 240px;
     }
     .age {
     	-webkit-align-self: flex-start;
     	align-self: flex-start;
-    	height: 250px;
+    	height: 240px;
     }
 	.userType {
     	-webkit-align-self: flex-start;
     	align-self: flex-start;
-    	height: 250px;
+    	height: 240px;
+    }
+    .direction {
+    	-webkit-align-self: flex-start;
+    	align-self: flex-start;
+    	height: 320px;
     }
     .hour {
-    	-webkit-align-self: flex-end;
-    	align-self: flex-end;
-    	height: 400px;
+    	-webkit-align-self: flex-start;
+    	align-self: flex-start;
+    	height: 320px;
     }
 	.weather {
-    	-webkit-align-self: flex-end;
-    	align-self: flex-end;
-    	height: 400px;
+    	-webkit-align-self: flex-start;
+    	align-self: flex-start;
+    	height: 320px;
     }
     .submit {
-    	-webkit-align-self: flex-end;
-    	align-self: flex-end;
-    	height: 400px;
+    	-webkit-align-self: flex-start;
+    	align-self: flex-start;
+    	height: 50px;
+    	width: 400px;
     	background-color: white;
     }
 
@@ -147,8 +153,19 @@
 	}
 
 	.button {
-		width: 110px;
-		height: 35px;
+		width: 130px;
+		height: 50px;
+		font: bold 20px Arial;
+		color: white;
+		-moz-border-radius: 8px;
+		-webkit-border-radius: 8px;
+		border-radius: 8px;
+		display: inline-block;
+		background: rgb(237,34,40);
+		cursor: pointer;
+		text-align: center;
+		position: absolute;
+    	left: 180px;
 	}
 	.myButton {
 		width: 110px;
@@ -165,7 +182,7 @@
 		font-size: 14px;
 		padding: 5px 5px;
 		text-align: center;
-		margin: 5px 5px;
+		margin: 3px 3px;
 	}
 	.myButtonPressed {
 		width: 110px;
@@ -182,7 +199,7 @@
 		font-size: 14px;
 		padding: 5px 5px;
 		text-align: center;
-		margin: 5px 5px;		
+		margin: 3px 3px;		
 	}
 	.myButton:hover {
 		background-color: rgb(32,56,110);
@@ -249,16 +266,17 @@
 	<p>The visualization below is intended for public consumption in order to further educate and encourage data exploration stemming from the Citibike NYC program. The intended audience includes potential users of the Citibike NYC program, as well as those with interest in the program, its usage, or any underlying trends. </p>
 
 	<h2>Instructions: </h2>
-	<p>To begin exploration, select a single bike station from the map of New York City below. After selecting a bike station, a pop-up window will appear to identify the station selected. Then, make selections from the available filter buttons to the right of the map for further exploration of the data. Each toggle clicked for a station will display an updated histogram with trips by frequency, reflecting the parameters specified by the user. Users can also move to a different station at any time by selecting one from the map and updating toggles, as desired. </p>
+	<p>To begin exploration, select a single bike station from the map of New York City below. After selecting a bike station, a pop-up window will appear to identify the station selected. Then, make selections from the available filter buttons to the right of the map for further exploration of the data. After define all the options for a station, click the 'submit' button. Below the map displays a histogram with trips by frequency, reflecting the most popular desitinations or origins. Users can also move to a different station at any time by selecting one from the map and updating toggles, as desired. </p>
 
 	<div class="mapArea"></div>
 	<div class="controlArea">
 		<div class="buttonContainer gender" id="gender">Gender:</div>
 		<div class="buttonContainer age" id="age">Age:</div>
 		<div class="buttonContainer userType" id="userType">User Type:</div>
+		<div class="buttonContainer direction" id="direction">Direction:</div>
 		<div class="buttonContainer hour" id="hour">Hour:</div>
 		<div class="buttonContainer weather" id="weather">Weather:</div>
-		<div class="buttonContainer submit" id="submit"></div>	
+		<div class="buttonContainer submit" id="submit"></div>
 	</div>
 	<br></br>
 	<div class="histoArea"></div>
@@ -412,7 +430,7 @@
 	.attr('class', 'd3-tip')
 	.offset([-10, 0])
 	.html(function(d) {
-		return "<strong>Trip Count:</strong> <span style='color:yellow'>" + d.count + "</span>"
+		return "<strong></strong> <span style='color:white'>" + d.stationName + "</span>"
 	});
 	map.call(maptip);
 
@@ -434,46 +452,26 @@
 			})
 			.attr("r", 3.0)
 			.attr("fill", "rgb(32,56,110)")
-			.on("mouseover", function(d){
-				d3.select(this)
-				.transition()
-				.duration(1)
-				.attr("fill", "orange");
-				maptip.show;
-
-			})
-			.on("mouseout", function(d){
-				d3.select(this)
-				.transition()
-				.duration(1000)
-				.attr("fill", "rgb(32,56,110)");
-				maptip.hide;
-			})
+			.on("mouseover", maptip.show)
+			.on("mouseout", maptip.hide)
 			.on("click", function(d){
 				d3.selectAll("circle")
 				.attr("fill", "rgb(32,56,110)")
 				.attr("fill-opacity", 1)
 				.attr("r", 3.0) // Use this to change the fill based on a function with summary data.
 				;
-
 				d3.select(this)
 				.attr("fill", "red")
 				.attr("fill-opacity", .6)
-				.attr("r", 10)
+				.attr("r", 8)
 				.moveToBack()
 				;
-
 				map.selectAll("path").moveToBack();
-
-				alert("stationName=" + this.getAttribute('id') + " stationID="+d.stationID + " count=" + d.count); // Placeholder for interactivity code
-
+				alert("You have selected: " + this.getAttribute('id')); // Placeholder for interactivity code
 				query();
-			})
-			;
-
+			});
 		map.selectAll("path").moveToBack(); // To gaurantee that the map is behind the circles 
 		//query();
-
 	});
 
 	function mapupdate(){
@@ -509,7 +507,7 @@
 
 				map.selectAll("path").moveToBack();
 
-				alert("stationName=" + this.getAttribute('id') + " stationID="+d.stationID + " count=" + d.count); // Placeholder for interactivity code
+				//alert("stationName=" + this.getAttribute('id') + " stationID="+d.stationID + " count=" + d.count); // Placeholder for interactivity code
 
 				//query();
 				})
@@ -524,6 +522,7 @@
 	ages = [["a", "< 20", 0], ["b", "20 to 30", 0], ["c", "30 to 40", 0], ["d", "40 to 50", 0], ["e", "> 50", 0]]; // id names can't start with number
 	userTypes = [["Subscriber", 0], ["Customer", 0]];
 	weathers = [["Sunny", 0], ["Rainy", 0], ["Snowy", 0], ["Windy", 0], ["Hot", 0], ["Cold", 0], ["Extreme", 0]];
+	directions = [["Incoming", 0], ["Outgoing", 0]];
 	hours = [["f", "7am to 10am", 0], ["g", "10am to 5pm", 0], ["h", "5pm to 8pm", 0], ["i", "8pm to 12am", 0], ["j", "12am to 7am", 0]];
 
 	d3.select("#gender")
@@ -569,6 +568,26 @@
 	d3.select("#userType")
 	.selectAll("button")
 	.data(userTypes)
+	.enter()
+	.append("button")
+	.attr("class", "myButton")
+	.text(function(d){
+	 	return d[0];})
+	.attr("id", function(d){
+	 	return d[0];})
+	.on("click", function(d){
+		if (this.getAttribute("class")=="myButton") {
+			d3.select(this).attr("class", "myButtonPressed");
+			d[1]=1;
+		} else {
+			d3.select("#"+d[0]).attr("class", "myButton");
+			d[1]=0;
+		}
+	})
+
+	d3.select("#direction")
+	.selectAll("button")
+	.data(directions)
 	.enter()
 	.append("button")
 	.attr("class", "myButton")
@@ -659,12 +678,19 @@
 	.orient("left")
 	.tickFormat(formatString);
 
+	// build a dictionary of station ID to station name
+	var stationIDtoName = {};
+	results = d3.csv("data/stations.csv")
+	for (var i=0; i<results.length; i++) {
+		stationIDtoName[results[i].stationID] = resutls[i].stationName;
+	}
+
 	var tip = d3.tip()
 	.attr('class', 'd3-tip')
 	.offset([-10, 0])
 	.html(function(d) {
 		return "<strong>Trip Count:</strong> <span style='color:yellow'>" + d.count + "</span>"
-	})
+	});
 
 	var graph = d3.select("div.histoArea")
 	.append("svg")
@@ -707,10 +733,10 @@
 			.attr("x", (width / 2))             
 			.attr("y", 0 - (margin.top / 2))
 			.attr("text-anchor", "middle")  
-			.style("font-size", "24px") 
-			.style("text-decoration", "underline")
-			.style("font-family", "Helvetica")  
-			.text("Top Destinations for the Selected Parameters");
+			.style("font-size", "24px")
+			.style("text-decoration", "bold")
+			.style("font-family", "Arial")
+			.text("Top Destinations (or Origins) [2014/11 - 2015/11]");
 
 			graph.selectAll(".bar")
 			.data(data)
@@ -722,7 +748,6 @@
 			.attr("height", function(d) { return height - y(d.count); })
 			.on('mouseover', tip.show)
 			.on('mouseout', tip.hide);
-
 
 		});
 	};

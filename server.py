@@ -18,25 +18,26 @@ app.debug = True
 def get_weather_data(es, heavy_rain=None, heavy_snow=None, too_windy=None, 
                             too_hot=None, too_cold=None, extreme_weather=None):
 
-    query = '{ "query": { "filtered": { "query":{"match_all":{}}, "filter": { "bool":  {'
+    query = '{ "query": { "filtered": { "query":{"match_all":{}}, "filter": { "or":  { "filters":['
 
     conditions=[]
     if heavy_rain is not None:
-        conditions.append('"must": {"term": {"heavy_rain":'+str(heavy_rain)+'} }')
+        conditions.append('{"term": {"heavy_rain":'+str(heavy_rain)+'} }')
     if heavy_snow is not None:
-        conditions.append('"must": {"term": {"heavy_snow":'+str(heavy_snow)+'} }')
+        conditions.append('{"term": {"heavy_snow":'+str(heavy_snow)+'} }')
     if too_windy is not None:
-        conditions.append('"must": {"term": {"too_windy":'+str(too_windy)+'} }')
+        conditions.append('{"term": {"too_windy":'+str(too_windy)+'} }')
     if too_hot is not None:
-        conditions.append('"must": {"term": {"too_hot":'+str(too_hot)+'} }')
+        conditions.append('{"term": {"too_hot":'+str(too_hot)+'} }')
     if too_cold is not None:
-        conditions.append('"must": {"term": {"too_cold":'+str(too_cold)+'} }')
+        conditions.append('{"term": {"too_cold":'+str(too_cold)+'} }')
     if extreme_weather is not None:
-        conditions.append('"must": {"term": {"extreme_weather":'+str(extreme_weather)+'} }')
+        conditions.append('{"term": {"extreme_weather":'+str(extreme_weather)+'} }')
 
     query = query + ",".join(conditions)
     
-    query = query + "}}}}}"
+    query = query + "]}}}}}"
+    #print query
     res = es.search(index="weather",
                     size=500,
                     body=query)
@@ -46,6 +47,7 @@ def get_weather_data(es, heavy_rain=None, heavy_snow=None, too_windy=None,
         dates.append(hit['_source']['DATE'])
     #print("Matched %d days:" % res['hits']['total'])
     dates = map(lambda x:'"'+str(x)+'"',dates)
+    #print dates
     return dates
 
 
