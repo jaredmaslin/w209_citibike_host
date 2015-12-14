@@ -293,29 +293,64 @@
 
 	function query(){
 		//Retrieve appropriate query file
-		// Currently, this selects from existing files
-		// Later, this must download and retrieve the correct file
-		
-		//female, subscriber, age20to30, hour0to30, goodweather, incoming
-		query2 =paramvalues.GoodWeather==1 && paramvalues.Subscriber==1 && paramvalues.Female==1 && paramvalues.Age20To30==1 && paramvalues.Hour0To23==1 && paramvalues.incoming==1;
-
-		query3 =paramvalues.GoodWeather==1 && paramvalues.Subscriber==1 && paramvalues.Male==1 && paramvalues.Age20To30==1 && paramvalues.Hour0To23==1 && paramvalues.incoming==1;
-
-		query4 =paramvalues.HeavyRain==1 && paramvalues.Subscriber==1 && paramvalues.Male==1 && paramvalues.Age20To30==1 && paramvalues.Hour0To23==1 && paramvalues.incoming==1;
-
-		query5 =paramvalues.GoodWeather==1 && paramvalues.Subscriber==1 && paramvalues.Male==1 && paramvalues.Age30To40==1 && paramvalues.Hour0To23==1 && paramvalues.incoming==1;
-
-		query6 =paramvalues.GoodWeather==1 && paramvalues.Subscriber==1 && paramvalues.Male==1 && paramvalues.Age20To30==1 && paramvalues.Hour0To23==1 && paramvalues.outgoing==1;
-
-		query7 =paramvalues.GoodWeather==1 && paramvalues.Subscriber==1 && paramvalues.Male==1 && paramvalues.Age20To30==1 && paramvalues.Hour0To7==1 && paramvalues.outgoing==1;
-
 		queryfile = "sample_query_output/query1.csv";
-		if (query2){queryfile="sample_query_output/query2.csv";};
-		if (query3){queryfile="sample_query_output/query3.csv";};
-		if (query4){queryfile="sample_query_output/query4.csv";};
-		if (query5){queryfile="sample_query_output/query5.csv";};
-		if (query6){queryfile="sample_query_output/query6.csv";};
-		if (query7){queryfile="sample_query_output/query7.csv";};
+
+			// Sample of a full query:
+		//  query_es?heavy_rain=0&heavy_snow=0&too_windy=0&too_hot=0&too_cold=0&extreme_weather=0&usertype=1&gender=1&min_age=20&max_age=30&min_hour=0&max_hour=23&incoming=1
+
+		// Query base
+		queryfile = "http://54.85.92.24:5000/query_es?";
+
+		// The current buttons available:
+		//   ["", "Male", "Female", "Customer", "Subscriber", "Age20To40", "Age40To60", "AgeOver60", "Morning", "Afteroon", "Evening", "Midnight" ,"GoodWeather", "ExtremeWeather"]
+		if (genders[0][1]==1 && genders[1][1]==1) {
+			queryfile=queryfile.concat("");
+		} else if (genders[0][1]==1) {
+			queryfile=queryfile.concat("gender=1");
+		} else {
+			queryfile=queryfile.concat("gender=0");
+		};
+		
+
+		if (paramvalues.Customer==1){
+			queryfile=queryfile.concat("&usertype=0");
+		} else {
+			queryfile=queryfile.concat("&usertype=1");
+		};
+
+		if (paramvalues.Age20to40==1){
+			queryfile=queryfile.concat("&min_age=20&max_age=40");
+		};
+
+		if (paramvalues.Age40To60==1){
+			queryfile=queryfile.concat("&min_age=40&max_age=60");
+		};
+
+		if (paramvalues.AgeOver60==1){
+			queryfile=queryfile.concat("&min_age=60&max_age=99");
+		};
+
+		if (paramvalues.Midnight==1){
+			queryfile=queryfile.concat("&min_hour=0&max_hour=6");
+		};
+
+		if (paramvalues.Evening==1){
+			queryfile=queryfile.concat("&min_hour=18&max_hour=23");
+		};
+
+		if (paramvalues.Afternoon==1){
+			queryfile=queryfile.concat("&min_hour=12&max_hour=18");
+		};
+
+		if (paramvalues.Morning==1){
+			queryfile=queryfile.concat("&min_hour=6&max_hour=12");
+		};
+
+		if (paramvalues.GoodWeather==1){
+			queryfile=queryfile.concat("&heavy_rain=0&heavy_snow=0&too_windy=0&too_hot=0&too_cold=0&extreme_weather=0");
+		} else {
+			queryfile=queryfile.concat("&heavy_rain=0&heavy_snow=0&too_windy=0&too_hot=0&too_cold=0&extreme_weather=1");
+		};
 
 		//Update the map
 		mapupdate();
